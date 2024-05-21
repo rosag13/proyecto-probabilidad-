@@ -22,7 +22,7 @@ ui <- dashboardPage(
           sidebarPanel(
             helpText("Esta aplicación realiza un análisis de la base de datos de gemelos monocigóticos."),
             actionButton("cargar_datos", "Cargar Datos")
-          ),  # Para tener la informacion mas clara separar en cajas laa info general y los datos de registros 
+          ),
           mainPanel(
             tabsetPanel(
               tabPanel(
@@ -49,7 +49,7 @@ ui <- dashboardPage(
               tabPanel(
                 title = "Significado de Variables",
                 fluidRow(
-                  box( #pestaña para ver significado de las variables
+                  box(
                     title = "Significado de Variables",
                     status = "primary",
                     solidHeader = TRUE,
@@ -85,7 +85,7 @@ ui <- dashboardPage(
                     status = "primary",
                     solidHeader = TRUE,
                     width = 12,
-                    HTML('<p style="font-size: 16px; font-weight: bold;">Todas las medidas están en dólares por hora.</p>'), #editar la letra
+                    HTML('<p style="font-size: 16px; font-weight: bold;">Todas las medidas están en dólares por hora.</p>'),
                     tableOutput("resumen_estadistico")
                   )
                 )
@@ -106,7 +106,7 @@ ui <- dashboardPage(
               tabPanel(
                 title = "Gráficos",
                 plotOutput("histograma_salarios")
-              ),#Se añade una pestaña con la informacion de cada variable 
+              ),
               tabPanel(
                 title = "Significado de Variables",
                 fluidRow(
@@ -140,7 +140,7 @@ ui <- dashboardPage(
       )
     )
   ),
-  skin = "black"  # define el color de la app web
+  skin = "black" # define el color de la app web
 )
 
 # Define el servidor
@@ -157,7 +157,8 @@ server <- function(input, output) {
     registros_completos <- sum(rowSums(is.na(gemelos)) == 0)
     
     info_general <- paste(
-      "Número total de registros:", num_registros, "\n",
+      "Número total de registros:",
+      num_registros, "\n",
       "Número de variables:", num_variables, "\n"
     )
     
@@ -184,7 +185,7 @@ server <- function(input, output) {
     # Cálculo del resumen estadístico
     resumen_estadistico <- data.frame(
       Medida_Numérica = c("Media", "Mediana", "Moda", "Rango", "Varianza", "Desv. Est.", "CV", "Q1", "Q2", "Q3", "Mínimo", "Máximo"),
-      Gemelo_1 = c(   # datos estadisticos gemelo 1
+      Gemelo_1 = c(
         mean(gemelos_completos$HRWAGEL, na.rm = TRUE),
         median(gemelos_completos$HRWAGEL, na.rm = TRUE),
         as.numeric(names(sort(table(gemelos_completos$HRWAGEL), decreasing = TRUE)[1])),
@@ -197,7 +198,7 @@ server <- function(input, output) {
         quantile(gemelos_completos$HRWAGEL, 0.75, na.rm = TRUE),
         min(gemelos_completos$HRWAGEL, na.rm = TRUE),
         max(gemelos_completos$HRWAGEL, na.rm = TRUE)
-      ),# Datos estadisticos gemelo 2
+      ),
       Gemelo_2 = c(
         mean(gemelos_completos$HRWAGEH, na.rm = TRUE),
         median(gemelos_completos$HRWAGEH, na.rm = TRUE),
@@ -213,13 +214,27 @@ server <- function(input, output) {
         max(gemelos_completos$HRWAGEH, na.rm = TRUE)
       )
     )
-    #Salida del resumen estadistico
+    
+    # Salida del resumen estadístico
     output$resumen_estadistico <- renderTable({
       resumen_estadistico
-    }, striped = TRUE, hover = TRUE, spacing = "s") # striped:añade lineas para diferenciar,hover:para ver el cursor,spacing :controla el espacio de celdas
+    }, striped = TRUE, hover = TRUE, spacing = "s") # striped: añade líneas para diferenciar, hover: para ver el cursor, spacing: controla el espacio de celdas
+    
+    # Gráfico de histograma de salarios
+    output$histograma_salarios <- renderPlot({
+      gemelo_elegido <- switch(input$gemelo_selector_graficos,
+                               "Gemelo 1" = gemelos$HRWAGEL,
+                               "Gemelo 2" = gemelos$HRWAGEH)
+      ggplot(data = data.frame(salario = gemelo_elegido
+      ), aes(x = salario)) +
+        geom_histogram(binwidth = 1, fill = ifelse(input$gemelo_selector_graficos == "Gemelo 1", "pink", "pink"), color = "black", alpha = 0.5) +
+        geom_freqpoly(binwidth = 1, color = "blue") +
+        labs(x = "Salario por hora", y = "Frecuencia", title = paste("Histograma de Salarios de", input$gemelo_selector_graficos))
+    })
   })
 }
 
+# Ejecutar la aplicación
 shinyApp(ui = ui, server = server)
 
     
