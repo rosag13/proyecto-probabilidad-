@@ -35,13 +35,40 @@ ui <- dashboardPage(
                     solidHeader = TRUE,
                     width = 12,
                     verbatimTextOutput("info_general")
-                  ), #Caja con informacion de los datos generales y faltantes
+                  ),
                   box(
                     title = "Datos de Registros",
                     status = "primary",
                     solidHeader = TRUE,
                     width = 12,
                     verbatimTextOutput("datos_registros")
+                  )
+                )
+              ),
+              tabPanel(
+                title = "Significado de Variables",
+                fluidRow(
+                  box(
+                    title = "Significado de Variables",
+                    status = "primary",
+                    solidHeader = TRUE,
+                    width = 12,
+                    p("HRWAGEL: Salario por hora del Gemelo 1"),
+                    p("HRWAGEH: Salario por hora del Gemelo 2"),
+                    p("DLHRWAGE: Cambio en el salario por hora entre los gemelos 1 y 2."),
+                    p("DEDUC1: Nivel educativo del Gemelo 1."),
+                    p("AGE: Edad del Gemelo."),
+                    p("AGESQ: Edad del Gemelo al cuadrado."),
+                    p("WHITEH: Indicador de raza del Gemelo 2, donde 1 representa blanco y 0 representa no blanco."),
+                    p("MALEH: Indicador de género del Gemelo 2 donde 1 representa masculino y 0 representa femenino."),
+                    p("EDUCH: Nivel educativo del Gemelo 2."),
+                    p("WHITEL: Indicador de raza del Gemelo 1, donde 1 representa blanco y 0 representa no blanco."),
+                    p("MALEL: Indicador de género del Gemelo 1, donde 1 representa masculino y 0 representa femenino."),
+                    p("EDUCL: Nivel educativo del Gemelo 1."),
+                    p("DEDUC2: Diferencia en el nivel educativo entre los gemelos."),
+                    p("DTEN: Diferencia en la experiencia laboral entre los gemelos."),
+                    p("DMARRIED: Diferencia en el estado civil entre los gemelos, donde 1 representa casado y 0 representa soltero."),
+                    p("DUNCOV: Diferencia en la cobertura del seguro entre los gemelos.")
                   )
                 )
               ),
@@ -53,6 +80,7 @@ ui <- dashboardPage(
           )
         )
       ),
+      
       tabItem(
         tabName = "graficos",
         fluidRow(
@@ -60,7 +88,39 @@ ui <- dashboardPage(
             selectInput("gemelo_selector_graficos", "Seleccionar Gemelo", choices = c("Gemelo 1", "Gemelo 2"))
           ),
           mainPanel(
-            plotOutput("histograma_salarios")
+            tabsetPanel(
+              tabPanel(
+                title = "Gráficos",
+                plotOutput("histograma_salarios")
+              ),
+              tabPanel(
+                title = "Significado de Variables",
+                fluidRow(
+                  box(
+                    title = "Significado de Variables",
+                    status = "primary",
+                    solidHeader = TRUE,
+                    width = 12,
+                    p("HRWAGEL: Salario por hora del Gemelo 1"),
+                    p("HRWAGEH: Salario por hora del Gemelo 2"),
+                    p("DLHRWAGE: Cambio en el salario por hora entre los gemelos 1 y 2."),
+                    p("DEDUC1: Nivel educativo del Gemelo 1."),
+                    p("AGE: Edad del Gemelo."),
+                    p("AGESQ: Edad del Gemelo al cuadrado."),
+                    p("WHITEH: Indicador de raza del Gemelo 2, donde 1 representa blanco y 0 representa no blanco."),
+                    p("MALEH: Indicador de género del Gemelo 2 donde 1 representa masculino y 0 representa femenino."),
+                    p("EDUCH: Nivel educativo del Gemelo 2."),
+                    p("WHITEL: Indicador de raza del Gemelo 1, donde 1 representa blanco y 0 representa no blanco."),
+                    p("MALEL: Indicador de género del Gemelo 1, donde 1 representa masculino y 0 representa femenino."),
+                    p("EDUCL: Nivel educativo del Gemelo 1."),
+                    p("DEDUC2: Diferencia en el nivel educativo entre los gemelos."),
+                    p("DTEN: Diferencia en la experiencia laboral entre los gemelos."),
+                    p("DMARRIED: Diferencia en el estado civil entre los gemelos, donde 1 representa casado y 0 representa soltero."),
+                    p("DUNCOV: Diferencia en la cobertura del seguro entre los gemelos.")
+                  )
+                )
+              )
+            )
           )
         )
       )
@@ -120,3 +180,4 @@ server <- function(input, output) {
 }
 
 shinyApp(ui = ui, server = server)
+
